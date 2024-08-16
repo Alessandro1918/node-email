@@ -1,3 +1,20 @@
 ###
 //Check if server is online
 GET http://localhost:4000/
+
+###
+//Send email
+POST http://localhost:4000/send-trip-confirmation
+Content-Type: application/json
+
+{
+  "destination": "Florianopólis",
+  "starts_at": "2024-08-17",
+  "ends_at": "2024-08-19",
+  "owner_name": "Alessandro",
+  "owner_email": "ale@hotmail.com",
+  "emails_to_invite": [
+    "1@gmail.com",
+    "2@gmail.com"
+  ]
+}
