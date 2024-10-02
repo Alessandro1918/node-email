@@ -9,8 +9,8 @@ Content-Type: application/json
 
 {
   "destination": "Florianopólis",
-  "starts_at": "2024-08-17",
-  "ends_at": "2024-08-19",
+  "starts_at": "2024-10-17",
+  "ends_at": "2024-10-19",
   "owner_name": "Alessandro",
   "owner_email": "ale@hotmail.com",
   "emails_to_invite": [

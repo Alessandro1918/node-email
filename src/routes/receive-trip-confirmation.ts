@@ -1,19 +1,27 @@
 import type { FastifyInstance } from 'fastify'
+import { z } from 'zod'
+import { receiveTripConfirmationService } from '../services/receive-trip-confirmation'
 
-export async function receiveTripConfirmation(app: FastifyInstance) {
+export async function receiveTripConfirmationRoute(app: FastifyInstance) {
+  
+  //In PROD, the confirmation email should have a link to a webpage (frontend), 
+  //which in turn would call this backend route.
+
   app.get("/trips/:trip_id/confirm", async (request: any, reply) => {
 
-    const {
-      trip_id
-    } = request.params
+    //De-structure without Zod:
+    // const { trip_id } = request.params
 
-    //TODO:
-    //Save confirmation @ the db.
+    //With Zod:
+    const requestSchema = z.object({
+      trip_id: z.string().uuid()
+    })
 
-    console.log(`Trip ${trip_id} confirmed!`)
+    const params = requestSchema.parse(request.params)
 
-    //TODO:
-    //Redirect user to some page @ the frontend.
+    const { trip_id } = params
+
+    await receiveTripConfirmationService({ trip_id })
 
     return { tripId: trip_id }
 
