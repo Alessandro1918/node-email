@@ -1,10 +1,12 @@
 import { z } from 'zod'
 
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
+  // DATABASE_URL: z.string().url(),
   API_BASE_URL: z.string().url(),
   WEB_BASE_URL: z.string().url(),
   PORT: z.coerce.number().default(3333),
+  EMAIL_ADDRESS: z.string().email(),
+  EMAIL_PASSWORD: z.string()
 })
 
 //This "helper" will parse "process.env" file first, to ensure all the vars are OK.

@@ -16,9 +16,10 @@ Envio de emails de um servidor [Node.js](https://nodejs.org/pt)
 
 ### ▶️ Rodando o App:
 ```bash
-  $ cd node-email   #change to that directory
-  $ npm install     #download dependencies to node_modules
-  $ npm run dev     #start the project
+  $ cd node-email           #change to that directory
+  $ npm install             #download dependencies to node_modules
+  $ cp .env.example .env    #create the ".env" file like the ".env.example" file
+  $ npm run dev             #start the project
 ```
 
 ### 💻 Rotas HTTP:
