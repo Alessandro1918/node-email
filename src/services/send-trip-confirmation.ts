@@ -34,7 +34,7 @@ export async function sendTripConfirmationService({
     throw new ClientError('Invalid end date.')
   }
 
-  //Save @ the db
+  //Save trip @ the db
   // const trip = await prisma.trip.create({
   //   data: {
   //     destination,
@@ -67,16 +67,20 @@ export async function sendTripConfirmationService({
 
   //In PROD, this email should have a link to a webpage (frontend), 
   //which in turn would call the "/receive-trip-confirmation" backend route.
+  //For now, the email will call the backend route directly.
   const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`
+
+  console.log("Sending email...")
 
   const mail = await getMailClient()
 
-  console.log("Sending email...")
+  const sender_name = "Equipe plann.er"
+  const sender_address = "oi@plann.er"
   
   const message = await mail.sendMail({
     from: {
-      name: 'Equipe plann.er',
-      address: 'oi@plann.er',
+      name: sender_name,
+      address: sender_address,
     },
     to: {
       name: owner_name,
@@ -86,11 +90,15 @@ export async function sendTripConfirmationService({
     html: `
     <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
       <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
+      <p>Após a confirmação, seus amigos receberão o convite por email.</p>
       <p>Para confirmar sua viagem, clique no link abaixo:</p>
       <p>
         <a href="${confirmationLink}">Confirmar viagem</a>
       </p>
       <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
+      </br>
+      <p>Atenciosamente</p>
+      <p>${sender_name}</p>
     </div>
     `.trim(),
   })
