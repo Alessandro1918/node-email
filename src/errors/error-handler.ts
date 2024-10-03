@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify"
 import { ClientError } from "./client-error"
+import { EmailError } from "./email-error"
 import { ZodError } from "zod"
 
 type FastifyErrorHandler = FastifyInstance['errorHandler']
@@ -20,6 +21,14 @@ export const errorHandler: FastifyErrorHandler = (error, request, reply) => {
       message: error.message
     })
   }
+
+  if (error instanceof EmailError) {
+    return reply.status(535).send({
+      message: error.message
+    })
+  }
   
-  return reply.status(500).send({ message: 'Internal server error' })
+  return reply.status(500).send({
+    message: 'Internal server error'
+  })
 }

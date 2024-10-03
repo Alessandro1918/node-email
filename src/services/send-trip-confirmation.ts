@@ -3,6 +3,7 @@ import { dayjs } from "../libs/dayjs"
 // import { prisma } from '../lib/prisma'
 import nodemailer from "nodemailer"
 import { ClientError } from "../errors/client-error"
+import { EmailError } from "../errors/email-error"
 import { getMailClient } from "../libs/mail"
 import { env } from "../env"
 
@@ -72,39 +73,44 @@ export async function sendTripConfirmationService({
 
   console.log("Sending email...")
 
-  const mail = await getMailClient()
-
-  const sender_name = "Equipe plann.er"
-  const sender_address = "oi@plann.er"
+  try {
+    const mail = await getMailClient()
+    
+    const sender_name = "Equipe plann.er"
+    const sender_address = "oi@plann.er"  //get from .env file
+    
+    const message = await mail.sendMail({
+      from: {
+        name: sender_name,
+        address: sender_address,
+      },
+      to: {
+        name: owner_name,
+        address: owner_email,
+      },
+      subject: `Confirme sua viagem para ${destination} em ${formattedStartDate}`,
+      html: `
+      <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+        <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
+        <p>Após a confirmação, seus amigos receberão o convite por email.</p>
+        <p>Para confirmar sua viagem, clique no link abaixo:</p>
+        <p>
+          <a href="${confirmationLink}">Confirmar viagem</a>
+        </p>
+        <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
+        </br>
+        <p>Atenciosamente</p>
+        <p>${sender_name}</p>
+      </div>
+      `.trim(),
+    })
   
-  const message = await mail.sendMail({
-    from: {
-      name: sender_name,
-      address: sender_address,
-    },
-    to: {
-      name: owner_name,
-      address: owner_email,
-    },
-    subject: `Confirme sua viagem para ${destination} em ${formattedStartDate}`,
-    html: `
-    <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
-      <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas de <strong>${formattedStartDate}</strong> até <strong>${formattedEndDate}</strong>.</p>
-      <p>Após a confirmação, seus amigos receberão o convite por email.</p>
-      <p>Para confirmar sua viagem, clique no link abaixo:</p>
-      <p>
-        <a href="${confirmationLink}">Confirmar viagem</a>
-      </p>
-      <p>Caso você não saiba do que se trata esse e-mail, apenas ignore esse e-mail.</p>
-      </br>
-      <p>Atenciosamente</p>
-      <p>${sender_name}</p>
-    </div>
-    `.trim(),
-  })
-
-  console.log("Email sent! Check at:")
-  console.log(nodemailer.getTestMessageUrl(message))
-
-  return trip
+    console.log("Email sent!")
+    // console.log("Check at:", nodemailer.getTestMessageUrl(message))   //only works with testAccount
+  
+    return trip
+  } catch (error) {
+    console.log(error)
+    throw new EmailError(error.response)
+  }
 }
